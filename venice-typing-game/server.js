@@ -6,6 +6,9 @@ const { ANIMALS } = require('./animals');
 const { WORDS } = require('./words');
 const { QUIZ_QUESTIONS } = require('./quiz-questions');
 const { COMMON_QUIZ_QUESTIONS } = require('./common-quiz-questions');
+const { HAEWON_QUIZ_QUESTIONS } = require('./haewon-quiz-questions');
+const { AI_QUIZ_QUESTIONS } = require('./ai-quiz-questions');
+const { DATASCIENCE_QUIZ_QUESTIONS } = require('./datascience-quiz-questions');
 const { WORDS_KR } = require('./words-kr');
 
 const app = express();
@@ -23,10 +26,10 @@ const COUNTDOWN_STEP_MS = 700; // 3,2,1 각 숫자 유지 시간
 
 // 라운드별 제한시간(초) - 5초부터 시작해서 점점 줄어듭니다
 function getRoundTime(round) {
-  if (round <= 5) return 5;
-  if (round <= 10) return 4;
-  if (round <= 15) return 3;
-  if (round <= 20) return 2;
+  if (round <= 10) return 5;
+  if (round <= 20) return 4;
+  if (round <= 26) return 3;
+  if (round <= 31) return 2;
   return 1;
 }
 
@@ -42,7 +45,7 @@ function shuffle(arr) {
 // ------------------ 방(room) 하나를 만드는 팩토리 ------------------
 // mode: 'typing' (타자연습) | 'quiz' (문제은행 기반 퀴즈)
 // questionBank: mode가 'quiz'일 때 사용할 문제 배열 ({question, answer}[])
-function createRoom(roomId, mode, label, questionBank) {
+function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
   const state = {
     roomId, mode, label,
     players: {},
@@ -54,6 +57,7 @@ function createRoom(roomId, mode, label, questionBank) {
     currentWord: null,     // typing: 정답 단어 / quiz: 정답
     currentQuestionText: null, // quiz: 화면에 보여줄 문제 (typing에서는 currentWord와 동일)
     currentRoundTime: 5,
+    fixedRoundTime: fixedRoundTime || null, // 지정하면 라운드가 진행돼도 이 시간으로 고정 (예: 5)
     roundAnswered: {},
     firstCorrectAwarded: false, // 이번 라운드 "1등 정답" 보너스가 이미 지급됐는지
     countdownStep: 3,
@@ -85,7 +89,7 @@ function createRoom(roomId, mode, label, questionBank) {
   function publicPlayer(p) {
     return {
       id: p.id, nickname: p.nickname, animal: p.animal,
-      row: p.row, wrongCount: p.wrongCount, eliminated: p.eliminated,
+      row: p.row, wrongCount: p.wrongCount, correctCount: p.correctCount, eliminated: p.eliminated,
       isHost: p.id === state.hostId,
     };
   }
@@ -106,6 +110,18 @@ function createRoom(roomId, mode, label, questionBank) {
   function emitRoom(event, payload) { io.to(roomId).emit(event, payload); }
 
   function join(socket, nickname) {
+    // 안전장치: 방에 아무도 없는데 상태가 waiting이 아니면(비정상 상황) 자동 복구
+    if (state.gameState !== 'waiting' && Object.keys(state.players).length === 0) {
+      clearInterval(state.mainLoopId);
+      state.mainLoopId = null;
+      state.gameState = 'waiting';
+      state.isPaused = false; state.pauseOffset = 0; state.pauseStartTime = null;
+      state.eliminationCounter = 0;
+      state.currentRound = 0;
+      state.quizOrder = [];
+      state.roundAnswered = {};
+      state.firstCorrectAwarded = false;
+    }
     if (state.gameState !== 'waiting') {
       socket.emit('errorMsg', { message: '이미 게임이 진행 중입니다. 잠시 후 다시 시도해 주세요.' });
       return;
@@ -125,7 +141,7 @@ function createRoom(roomId, mode, label, questionBank) {
 
     state.players[socket.id] = {
       id: socket.id, nickname: clean, animal,
-      row: START_ROW, wrongCount: 0, eliminated: false, eliminatedAt: null,
+      row: START_ROW, wrongCount: 0, correctCount: 0, eliminated: false, eliminatedAt: null,
     };
 
     socket.emit('joined', {
@@ -155,7 +171,7 @@ function createRoom(roomId, mode, label, questionBank) {
     }
     state.currentRound = 0;
     state.eliminationCounter = 0;
-    Object.values(state.players).forEach(p => { p.row = START_ROW; p.wrongCount = 0; p.eliminated = false; p.eliminatedAt = null; });
+    Object.values(state.players).forEach(p => { p.row = START_ROW; p.wrongCount = 0; p.correctCount = 0; p.eliminated = false; p.eliminatedAt = null; });
     if (state.mode === 'quiz' && state.questionBank) state.quizOrder = shuffle(state.questionBank.map((_, i) => i));
     emitRoom('gameStarted', { players: publicPlayerList() });
     clearInterval(state.mainLoopId);
@@ -191,7 +207,7 @@ function createRoom(roomId, mode, label, questionBank) {
       state.currentWord = pool[Math.floor(Math.random() * pool.length)];
       state.currentQuestionText = state.currentWord;
     }
-    state.currentRoundTime = getRoundTime(state.currentRound);
+    state.currentRoundTime = state.fixedRoundTime || getRoundTime(state.currentRound);
     state.currentDeadline = vNow() + state.currentRoundTime * 1000;
     state.firstCorrectAwarded = false;
     emitRoom('questionStart', {
@@ -206,6 +222,7 @@ function createRoom(roomId, mode, label, questionBank) {
   function applyAnswer(p, correct) {
     let firstBonus = false;
     if (correct) {
+      p.correctCount++;
       if (!state.firstCorrectAwarded) {
         state.firstCorrectAwarded = true;
         firstBonus = true;
@@ -222,7 +239,7 @@ function createRoom(roomId, mode, label, questionBank) {
       }
     }
     emitRoom('answerResult', {
-      id: p.id, correct, row: p.row, wrongCount: p.wrongCount, eliminated: p.eliminated, firstBonus,
+      id: p.id, correct, row: p.row, wrongCount: p.wrongCount, correctCount: p.correctCount, eliminated: p.eliminated, firstBonus,
       correctAnswer: state.currentWord,
     });
   }
@@ -270,7 +287,7 @@ function createRoom(roomId, mode, label, questionBank) {
     state.isPaused = false; state.pauseOffset = 0; state.pauseStartTime = null;
     state.eliminationCounter = 0;
     state.currentRound = 0;
-    Object.values(state.players).forEach(p => { p.row = START_ROW; p.wrongCount = 0; p.eliminated = false; p.eliminatedAt = null; });
+    Object.values(state.players).forEach(p => { p.row = START_ROW; p.wrongCount = 0; p.correctCount = 0; p.eliminated = false; p.eliminatedAt = null; });
     emitRoom('gameReset', { players: publicPlayerList(), hostId: state.hostId });
   }
 
@@ -322,6 +339,23 @@ function createRoom(roomId, mode, label, questionBank) {
       state.hostId = remaining.length ? remaining[0] : null;
       if (state.hostId) io.to(state.hostId).emit('youAreHost');
     }
+
+    // 방에 아무도 안 남으면, 게임이 어떤 상태였든 상관없이 완전히 초기화합니다.
+    // (호스트가 게임 도중 나가버리고 남은 사람도 없으면 방이 "진행중" 상태로 영영 막혀서
+    //  아무도 새로 못 들어오는 문제를 방지)
+    if (Object.keys(state.players).length === 0) {
+      clearInterval(state.mainLoopId);
+      state.mainLoopId = null;
+      state.gameState = 'waiting';
+      state.isPaused = false; state.pauseOffset = 0; state.pauseStartTime = null;
+      state.eliminationCounter = 0;
+      state.currentRound = 0;
+      state.quizOrder = [];
+      state.roundAnswered = {};
+      state.firstCorrectAwarded = false;
+      return;
+    }
+
     emitRoom('playerListUpdate', { players: publicPlayerList(), hostId: state.hostId });
 
     if (state.gameState === 'question' || state.gameState === 'countdown') {
@@ -377,8 +411,11 @@ function createRoom(roomId, mode, label, questionBank) {
 
 const rooms = {
   typing: createRoom('typing', 'typing', '⌨️ 타자연습'),
-  quiz: createRoom('quiz', 'quiz', '🧠 정보 퀴즈', QUIZ_QUESTIONS),
+  quiz: createRoom('quiz', 'quiz', '🧠 정보 퀴즈', QUIZ_QUESTIONS, 5),
+  ai: createRoom('ai', 'quiz', '🤖 인공지능 퀴즈', AI_QUIZ_QUESTIONS, 5),
+  datascience: createRoom('datascience', 'quiz', '📊 데이터과학 퀴즈', DATASCIENCE_QUIZ_QUESTIONS, 5),
   common: createRoom('common', 'quiz', '📚 상식 퀴즈', COMMON_QUIZ_QUESTIONS),
+  haewon: createRoom('haewon', 'quiz', '🏫 해원고 퀴즈', HAEWON_QUIZ_QUESTIONS),
 };
 
 function getRoom(roomId) { return rooms[roomId] || rooms.typing; }

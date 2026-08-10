@@ -333,9 +333,9 @@ function submitAnswer() {
 }
 
 // 서버가 정답 여부를 확정하는 즉시 반영 (본인/타인 공통 애니메이션, 소리는 본인만)
-socket.on('answerResult', ({ id, correct, row, wrongCount, eliminated, firstBonus, correctAnswer }) => {
+socket.on('answerResult', ({ id, correct, row, wrongCount, correctCount, eliminated, firstBonus, correctAnswer }) => {
   const p = players[id];
-  if (p) { p.row = row; p.wrongCount = wrongCount; p.eliminated = eliminated; }
+  if (p) { p.row = row; p.wrongCount = wrongCount; p.correctCount = correctCount; p.eliminated = eliminated; }
 
   const token = document.getElementById('token-' + id);
   if (token) {
@@ -402,10 +402,12 @@ function renderRankingInto(container, ranking) {
     const row = document.createElement('div');
     row.className = 'ranking-row' + (p.id === myId ? ' me' : '') + (idx === 0 ? ' rank-1' : '');
     const status = p.eliminated ? '탈락' : '생존 중';
+    const correctCount = typeof p.correctCount === 'number' ? p.correctCount : 0;
     row.innerHTML = `
       <span class="rank-num">${idx + 1}</span>
       <span class="rank-emoji">${p.animal.emoji}</span>
       <span class="rank-name">${escapeHtml(p.nickname)}</span>
+      <span class="rank-correct">정답 ${correctCount}개</span>
       <span class="rank-status">${status}</span>
     `;
     container.appendChild(row);
