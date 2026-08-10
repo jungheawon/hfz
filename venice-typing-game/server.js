@@ -4,12 +4,17 @@ const path = require('path');
 const { Server } = require('socket.io');
 const { ANIMALS } = require('./animals');
 const { WORDS } = require('./words');
-const { QUIZ_QUESTIONS } = require('./quiz-questions');
+const { JUNGBO_QUIZ_QUESTIONS } = require('./jungbo-quiz-questions');
 const { COMMON_QUIZ_QUESTIONS } = require('./common-quiz-questions');
 const { HAEWON_QUIZ_QUESTIONS } = require('./haewon-quiz-questions');
 const { AI_QUIZ_QUESTIONS } = require('./ai-quiz-questions');
 const { DATASCIENCE_QUIZ_QUESTIONS } = require('./datascience-quiz-questions');
+const { NARAK_QUIZ_QUESTIONS } = require('./narak-quiz-questions');
+const { CHOSUNG_QUIZ_QUESTIONS } = require('./chosung-quiz-questions');
 const { WORDS_KR } = require('./words-kr');
+const { WORDCHAIN_SEED_WORDS } = require('./wordchain-seed-words');
+const { WORDCHAIN_DICTIONARY } = require('./wordchain-dictionary');
+const WORDCHAIN_DICT_SET = new Set(WORDCHAIN_DICTIONARY);
 
 const app = express();
 const server = http.createServer(app);
@@ -42,6 +47,18 @@ function shuffle(arr) {
   return a;
 }
 
+// 끝말잇기 단어 검증 (wordchain-dictionary.js 에 있는 단어만 정답으로 인정)
+function checkChainWord(chainWord, usedWords, raw) {
+  const w = (raw || '').toString().trim();
+  if (w.length < 2) return { ok: false, reason: '두 글자 이상 입력해야 해요.' };
+  if (!/^[가-힣]+$/.test(w)) return { ok: false, reason: '한글 단어만 입력할 수 있어요.' };
+  const lastChar = chainWord[chainWord.length - 1];
+  if (w[0] !== lastChar) return { ok: false, reason: `"${lastChar}"(으)로 시작해야 해요.` };
+  if (usedWords.has(w)) return { ok: false, reason: '이미 나온 단어예요.' };
+  if (!WORDCHAIN_DICT_SET.has(w)) return { ok: false, reason: '사전에 없는 단어예요.' };
+  return { ok: true, word: w };
+}
+
 // ------------------ 방(room) 하나를 만드는 팩토리 ------------------
 // mode: 'typing' (타자연습) | 'quiz' (문제은행 기반 퀴즈)
 // questionBank: mode가 'quiz'일 때 사용할 문제 배열 ({question, answer}[])
@@ -72,6 +89,9 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     questionBank: questionBank || null,
     quizTotal: mode === 'quiz' && questionBank ? questionBank.length : null,
     wordLanguage: 'en', // typing 모드 전용: 'en' | 'kr' (호스트가 대기실에서 선택)
+    chainWord: null,     // wordchain 모드: 지금 이어야 하는 단어
+    usedWords: new Set(), // wordchain 모드: 이미 나온 단어들
+    roundWinner: null,    // wordchain 모드: 이번 라운드에서 먼저 맞춘 사람 정보
   };
 
   function vNow() {
@@ -121,6 +141,9 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
       state.quizOrder = [];
       state.roundAnswered = {};
       state.firstCorrectAwarded = false;
+      state.usedWords = new Set();
+      state.chainWord = null;
+      state.roundWinner = null;
     }
     if (state.gameState !== 'waiting') {
       socket.emit('errorMsg', { message: '이미 게임이 진행 중입니다. 잠시 후 다시 시도해 주세요.' });
@@ -173,6 +196,11 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     state.eliminationCounter = 0;
     Object.values(state.players).forEach(p => { p.row = START_ROW; p.wrongCount = 0; p.correctCount = 0; p.eliminated = false; p.eliminatedAt = null; });
     if (state.mode === 'quiz' && state.questionBank) state.quizOrder = shuffle(state.questionBank.map((_, i) => i));
+    if (state.mode === 'wordchain') {
+      state.usedWords = new Set();
+      state.chainWord = WORDCHAIN_SEED_WORDS[Math.floor(Math.random() * WORDCHAIN_SEED_WORDS.length)];
+      state.usedWords.add(state.chainWord);
+    }
     emitRoom('gameStarted', { players: publicPlayerList() });
     clearInterval(state.mainLoopId);
     state.mainLoopId = setInterval(tick, 120);
@@ -197,11 +225,15 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
 
   function startQuestionPhase() {
     state.gameState = 'question';
+    state.roundWinner = null;
     if (state.mode === 'quiz') {
       const qIdx = state.quizOrder[(state.currentRound - 1) % state.quizOrder.length];
       const q = state.questionBank[qIdx];
       state.currentWord = q.answer;
       state.currentQuestionText = q.question;
+    } else if (state.mode === 'wordchain') {
+      state.currentWord = null; // 정해진 정답이 없음 (규칙만 맞으면 됨)
+      state.currentQuestionText = state.chainWord;
     } else {
       const pool = state.wordLanguage === 'kr' ? WORDS_KR : WORDS;
       state.currentWord = pool[Math.floor(Math.random() * pool.length)];
@@ -213,13 +245,14 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     emitRoom('questionStart', {
       round: state.currentRound,
       questionText: state.currentQuestionText,
+      chainLastChar: state.mode === 'wordchain' ? state.chainWord[state.chainWord.length - 1] : null,
       timeLimit: state.currentRoundTime,
       aliveCount: activePlayers().length,
       quizTotal: state.quizTotal,
     });
   }
 
-  function applyAnswer(p, correct) {
+  function applyAnswer(p, correct, extra) {
     let firstBonus = false;
     if (correct) {
       p.correctCount++;
@@ -238,10 +271,10 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
         p.eliminatedAt = ++state.eliminationCounter;
       }
     }
-    emitRoom('answerResult', {
+    emitRoom('answerResult', Object.assign({
       id: p.id, correct, row: p.row, wrongCount: p.wrongCount, correctCount: p.correctCount, eliminated: p.eliminated, firstBonus,
-      correctAnswer: state.currentWord,
-    });
+      correctAnswer: state.mode === 'wordchain' ? null : state.currentWord,
+    }, extra || {}));
   }
 
   function submitAnswer(socket, text) {
@@ -249,6 +282,22 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     const p = state.players[socket.id];
     if (!p || p.eliminated || state.roundAnswered[socket.id]) return;
     state.roundAnswered[socket.id] = true;
+
+    if (state.mode === 'wordchain') {
+      const check = checkChainWord(state.chainWord, state.usedWords, text);
+      if (check.ok) {
+        state.usedWords.add(check.word);
+        state.chainWord = check.word;
+        state.roundWinner = { id: p.id, nickname: p.nickname, word: check.word };
+        applyAnswer(p, true, { chainWord: check.word });
+        finishRound(); // 자유경쟁: 누군가 먼저 맞히면 그 즉시 라운드 종료
+      } else {
+        applyAnswer(p, false, { reason: check.reason });
+        maybeFinishEarly();
+      }
+      return;
+    }
+
     const correct = (text || '').toString().trim().toLowerCase() === (state.currentWord || '').toLowerCase();
     applyAnswer(p, correct);
     maybeFinishEarly();
@@ -266,7 +315,10 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     activePlayers().forEach(p => {
       if (state.roundAnswered[p.id]) return;
       state.roundAnswered[p.id] = true;
-      applyAnswer(p, false);
+      const extra = state.mode === 'wordchain' && state.roundWinner
+        ? { chainWinnerNickname: state.roundWinner.nickname, chainWinnerWord: state.roundWinner.word }
+        : undefined;
+      applyAnswer(p, false, extra);
     });
     state.resultEndTime = vNow() + NEXT_ROUND_DELAY;
   }
@@ -287,6 +339,9 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     state.isPaused = false; state.pauseOffset = 0; state.pauseStartTime = null;
     state.eliminationCounter = 0;
     state.currentRound = 0;
+    state.usedWords = new Set();
+    state.chainWord = null;
+    state.roundWinner = null;
     Object.values(state.players).forEach(p => { p.row = START_ROW; p.wrongCount = 0; p.correctCount = 0; p.eliminated = false; p.eliminatedAt = null; });
     emitRoom('gameReset', { players: publicPlayerList(), hostId: state.hostId });
   }
@@ -353,6 +408,9 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
       state.quizOrder = [];
       state.roundAnswered = {};
       state.firstCorrectAwarded = false;
+      state.usedWords = new Set();
+      state.chainWord = null;
+      state.roundWinner = null;
       return;
     }
 
@@ -382,6 +440,30 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     emitRoom('playerListUpdate', { players: publicPlayerList(), hostId: state.hostId });
   }
 
+  // 게임 중간에 "나가기" 버튼 - 방에서 완전히 나가지는 않고, 그 라운드만 기권(탈락) 처리하고
+  // 대기실 화면으로 돌아가게 해줍니다. 다른 사람들의 게임은 계속 진행됩니다.
+  function giveUp(socket) {
+    const p = state.players[socket.id];
+    if (!p || p.eliminated) return;
+    if (state.gameState !== 'question' && state.gameState !== 'countdown' && state.gameState !== 'result') return;
+
+    p.eliminated = true;
+    p.row = MAX_ROW;
+    p.eliminatedAt = ++state.eliminationCounter;
+    emitRoom('answerResult', {
+      id: p.id, correct: false, row: p.row, wrongCount: p.wrongCount, correctCount: p.correctCount,
+      eliminated: true, firstBonus: false, correctAnswer: null, gaveUp: true,
+    });
+
+    const active = activePlayers();
+    if (active.length <= 1) {
+      clearInterval(state.mainLoopId);
+      endGame(active[0] || null);
+    } else if (state.gameState === 'question') {
+      maybeFinishEarly();
+    }
+  }
+
   function tick() {
     if (state.isPaused) return;
     if (state.gameState === 'countdown') {
@@ -406,16 +488,19 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     }
   }
 
-  return { state, join, startGame, submitAnswer, pauseGame, resumeGame, restartMidGame, restartGame, requestRanking, chatMessage, leaveRoom, setWordLanguage, handleDisconnect };
+  return { state, join, startGame, submitAnswer, pauseGame, resumeGame, restartMidGame, restartGame, requestRanking, chatMessage, leaveRoom, giveUp, setWordLanguage, handleDisconnect };
 }
 
 const rooms = {
   typing: createRoom('typing', 'typing', '⌨️ 타자연습'),
-  quiz: createRoom('quiz', 'quiz', '🧠 정보 퀴즈', QUIZ_QUESTIONS, 5),
-  ai: createRoom('ai', 'quiz', '🤖 인공지능 퀴즈', AI_QUIZ_QUESTIONS, 5),
-  datascience: createRoom('datascience', 'quiz', '📊 데이터과학 퀴즈', DATASCIENCE_QUIZ_QUESTIONS, 5),
   common: createRoom('common', 'quiz', '📚 상식 퀴즈', COMMON_QUIZ_QUESTIONS),
   haewon: createRoom('haewon', 'quiz', '🏫 해원고 퀴즈', HAEWON_QUIZ_QUESTIONS),
+  quiz: createRoom('quiz', 'quiz', '🧠 정보 퀴즈', JUNGBO_QUIZ_QUESTIONS, 5),
+  ai: createRoom('ai', 'quiz', '🤖 인공지능 퀴즈', AI_QUIZ_QUESTIONS, 5),
+  datascience: createRoom('datascience', 'quiz', '📊 데이터과학 퀴즈', DATASCIENCE_QUIZ_QUESTIONS, 5),
+  wordchain: createRoom('wordchain', 'wordchain', '🔤 끝말잇기'),
+  narak: createRoom('narak', 'quiz', '🔥 나락퀴즈', NARAK_QUIZ_QUESTIONS),
+  chosung: createRoom('chosung', 'quiz', '🈂️ 초성퀴즈', CHOSUNG_QUIZ_QUESTIONS),
 };
 
 function getRoom(roomId) { return rooms[roomId] || rooms.typing; }
@@ -434,6 +519,7 @@ io.on('connection', (socket) => {
   socket.on('chatMessage', ({ text }) => { if (socket.data.roomId) getRoom(socket.data.roomId).chatMessage(socket, text); });
   socket.on('leaveRoom', () => { if (socket.data.roomId) { getRoom(socket.data.roomId).leaveRoom(socket); socket.data.roomId = null; } });
   socket.on('setWordLanguage', ({ lang }) => { if (socket.data.roomId) getRoom(socket.data.roomId).setWordLanguage(socket, lang); });
+  socket.on('giveUp', () => { if (socket.data.roomId) getRoom(socket.data.roomId).giveUp(socket); });
   socket.on('disconnect', () => { if (socket.data.roomId) getRoom(socket.data.roomId).handleDisconnect(socket); });
 });
 

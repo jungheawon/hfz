@@ -9,6 +9,7 @@ let localTimerInterval = null;
 let localDeadline = null;
 let localTimeLimit = 10;
 let clientPaused = false;
+let hasGivenUp = false; // 게임 중 "나가기"를 눌러 대기실로 돌아간 상태인지
 
 // ---------- 화면 전환 ----------
 const screens = {
@@ -197,6 +198,12 @@ function renderWaitingRoom() {
   updateHostControls();
 }
 function updateHostControls() {
+  if (hasGivenUp) {
+    btnStart.classList.add('hidden');
+    waitingHint.textContent = '게임이 끝날 때까지 기다리는 중입니다... (자동으로 다음 게임 대기실로 전환됩니다)';
+    waitingHint.classList.remove('hidden');
+    return;
+  }
   if (isHost) { btnStart.classList.remove('hidden'); waitingHint.classList.add('hidden'); }
   else { btnStart.classList.add('hidden'); waitingHint.classList.remove('hidden'); }
 }
@@ -226,10 +233,12 @@ const answerInput = document.getElementById('answer-input');
 const answerFeedback = document.getElementById('answer-feedback');
 const countdownOverlay = document.getElementById('countdown-overlay');
 const countdownNumberEl = document.getElementById('countdown-number');
+const chainHintEl = document.getElementById('chain-hint');
 
 const STAGE_TOP_PAD = 0, STAGE_BOTTOM_PAD = 22, MAX_ROW = 10;
 
 socket.on('gameStarted', ({ players: list }) => {
+  hasGivenUp = false;
   cachePlayers(list);
   playerOrder = list.map(p => p.id);
   buildPlayerTokens();
@@ -267,6 +276,7 @@ socket.on('countdownNumber', ({ n, round, aliveCount, quizTotal: qt }) => {
   clearInterval(localTimerInterval);
   timerBar.style.width = '0%';
   wordDisplay.textContent = '';
+  chainHintEl.classList.add('hidden');
   answerFeedback.textContent = ''; answerFeedback.className = '';
   answerInput.value = ''; answerInput.disabled = true;
   if (round) roundLabel.textContent = formatRoundLabel(round);
@@ -280,7 +290,7 @@ socket.on('countdownNumber', ({ n, round, aliveCount, quizTotal: qt }) => {
   playCountdownBeep(n);
 });
 
-socket.on('questionStart', ({ round, questionText, timeLimit, aliveCount, quizTotal: qt }) => {
+socket.on('questionStart', ({ round, questionText, chainLastChar, timeLimit, aliveCount, quizTotal: qt }) => {
   if (qt) quizTotal = qt;
   countdownOverlay.classList.add('hidden');
   roundLabel.textContent = formatRoundLabel(round);
@@ -290,6 +300,13 @@ socket.on('questionStart', ({ round, questionText, timeLimit, aliveCount, quizTo
   answerFeedback.textContent = ''; answerFeedback.className = '';
   answerInput.value = '';
   alreadyAnswered = false;
+
+  if (currentRoomMode === 'wordchain' && chainLastChar) {
+    chainHintEl.innerHTML = `<b>"${escapeHtml(chainLastChar)}"</b>(으)로 시작하는 단어를 가장 먼저 입력하세요!`;
+    chainHintEl.classList.remove('hidden');
+  } else {
+    chainHintEl.classList.add('hidden');
+  }
 
   const me = players[myId];
   if (me && me.eliminated) {
@@ -333,7 +350,7 @@ function submitAnswer() {
 }
 
 // 서버가 정답 여부를 확정하는 즉시 반영 (본인/타인 공통 애니메이션, 소리는 본인만)
-socket.on('answerResult', ({ id, correct, row, wrongCount, correctCount, eliminated, firstBonus, correctAnswer }) => {
+socket.on('answerResult', ({ id, correct, row, wrongCount, correctCount, eliminated, firstBonus, correctAnswer, reason, chainWord, chainWinnerNickname, chainWinnerWord }) => {
   const p = players[id];
   if (p) { p.row = row; p.wrongCount = wrongCount; p.correctCount = correctCount; p.eliminated = eliminated; }
 
@@ -348,7 +365,29 @@ socket.on('answerResult', ({ id, correct, row, wrongCount, correctCount, elimina
   }
 
   if (id === myId) {
-    if (correct && firstBonus) {
+    if (currentRoomMode === 'wordchain') {
+      if (correct) {
+        answerFeedback.textContent = `⚡ 성공! "${chainWord}" 로 이었어요! (위로 1.2칸 이동)`;
+        answerFeedback.className = 'correct';
+        playCorrectSound();
+        playBonusSound();
+      } else if (reason) {
+        answerFeedback.textContent = `${reason} (아래로 한 칸 이동)`;
+        answerFeedback.className = 'wrong';
+        playFallSound();
+        if (eliminated) setTimeout(playSplashSound, 300);
+      } else if (chainWinnerNickname) {
+        answerFeedback.textContent = `너무 늦었어요! ${chainWinnerNickname}님이 "${chainWinnerWord}"로 먼저 이었어요. (아래로 한 칸 이동)`;
+        answerFeedback.className = 'wrong';
+        playFallSound();
+        if (eliminated) setTimeout(playSplashSound, 300);
+      } else {
+        answerFeedback.textContent = '시간 초과! 아무도 다음 단어를 찾지 못했어요. (아래로 한 칸 이동)';
+        answerFeedback.className = 'wrong';
+        playFallSound();
+        if (eliminated) setTimeout(playSplashSound, 300);
+      }
+    } else if (correct && firstBonus) {
       answerFeedback.textContent = '⚡ 1등 정답! 1.2칸 이동!';
       answerFeedback.className = 'correct';
       playCorrectSound();
@@ -375,6 +414,7 @@ const resultRankingList = document.getElementById('result-ranking-list');
 
 socket.on('gameOver', ({ winner, ranking }) => {
   clearInterval(localTimerInterval);
+  if (hasGivenUp) return; // 이미 나가기를 눌러 대기실에서 기다리는 중이면 결과 화면으로 끌고 오지 않음
   if (winner) { winnerAnimal.textContent = winner.animal.emoji; winnerName.textContent = winner.nickname; }
   else { winnerAnimal.textContent = '🤝'; winnerName.textContent = '무승부 (생존자 없음)'; }
 
@@ -387,11 +427,25 @@ socket.on('gameOver', ({ winner, ranking }) => {
 btnRestart.addEventListener('click', () => socket.emit('restartGame'));
 
 socket.on('gameReset', ({ players: list, hostId }) => {
+  hasGivenUp = false;
   isHost = myId === hostId;
   cachePlayers(list);
   renderWaitingRoom();
   document.getElementById('pause-overlay').classList.add('hidden');
   clientPaused = false;
+  showScreen('waiting');
+});
+
+// ---------- 게임 중 "나가기" (대기실로 복귀, 방에서 완전히 나가지는 않음) ----------
+document.getElementById('btn-give-up').addEventListener('click', () => {
+  if (!confirm('정말 게임에서 나가시겠어요? 대기실로 돌아갑니다.')) return;
+  socket.emit('giveUp');
+  hasGivenUp = true;
+  clearInterval(localTimerInterval);
+  document.getElementById('pause-overlay').classList.add('hidden');
+  document.getElementById('ranking-overlay').classList.add('hidden');
+  clientPaused = false;
+  renderWaitingRoom();
   showScreen('waiting');
 });
 

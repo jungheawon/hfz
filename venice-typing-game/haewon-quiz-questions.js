@@ -24,10 +24,6 @@ const HAEWON_QUIZ_QUESTIONS = [
   { question: "교감선생님 성함은?", answer: "김효식" },
   { question: "해원고등학교 개교 연도는?", answer: "2013" },
   { question: "해원고등학교 교목은?", answer: "미선나무" },
-  { question: "해원고등학교 등교시간은?", answer: "8시40분" },
-  { question: "해원고등학교 급식시간은?", answer: "11시40분" },
-  { question: "해원고등학교 하교시간은?(6교시 기준)", answer: "3시30분" },
-  { question: "해원고등학교 미남쌤은?", answer: "대한쌤" },
 ];
 
 module.exports = { HAEWON_QUIZ_QUESTIONS };

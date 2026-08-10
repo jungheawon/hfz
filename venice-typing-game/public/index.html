@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>타자 서바이벌 - 베네치아</title>
+<title>해원고 서바이벌 퀴즈</title>
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -11,7 +11,7 @@
   <!-- 로그인 -->
   <section id="screen-login" class="screen active">
     <div class="login-box">
-      <h1> 해원고 서바이벌 게임</h1>
+      <h1>🏝️ 해원고 서바이벌 퀴즈</h1>
       <p class="subtitle">닉네임을 입력하고 방을 선택하세요</p>
       <input id="nickname-input" maxlength="10" placeholder="닉네임 (최대 10자)" autocomplete="off" />
 
@@ -34,19 +34,35 @@
         <button class="room-btn" id="room-btn-quiz" data-room="quiz">
           <span class="room-emoji">🧠</span>
           <span class="room-name">정보 퀴즈</span>
-          <span class="room-desc">고등학교 정보 문제 서바이벌</span>
+          <span class="room-desc">고등학교 정보 문제 서바이벌 (5초)</span>
         </button>
         <button class="room-btn" id="room-btn-ai" data-room="ai">
           <span class="room-emoji">🤖</span>
           <span class="room-name">인공지능 퀴즈</span>
-          <span class="room-desc">AI 개념 문제 서바이벌</span>
+          <span class="room-desc">AI 개념 문제 서바이벌 (5초)</span>
         </button>
         <button class="room-btn" id="room-btn-datascience" data-room="datascience">
           <span class="room-emoji">📊</span>
           <span class="room-name">데이터과학 퀴즈</span>
-          <span class="room-desc">데이터 분석 문제 서바이벌</span>
+          <span class="room-desc">데이터 분석 문제 서바이벌 (5초)</span>
+        </button>
+        <button class="room-btn" id="room-btn-wordchain" data-room="wordchain">
+          <span class="room-emoji">🔤</span>
+          <span class="room-name">끝말잇기</span>
+          <span class="room-desc">먼저 잇는 사람이 승리! 자유경쟁</span>
+        </button>
+        <button class="room-btn" id="room-btn-narak" data-room="narak">
+          <span class="room-emoji">🔥</span>
+          <span class="room-name">나락퀴즈</span>
+          <span class="room-desc">한국인이라면 모르면 안 되는 문제</span>
+        </button>
+        <button class="room-btn" id="room-btn-chosung" data-room="chosung">
+          <span class="room-emoji">🈂️</span>
+          <span class="room-name">초성퀴즈</span>
+          <span class="room-desc">초성 보고 단어 맞히기</span>
         </button>
       </div>
+
 
       <button id="btn-join">입장하기</button>
       <p id="login-error" class="error-msg"></p>
@@ -72,6 +88,7 @@
   <!-- 게임 화면 -->
   <section id="screen-game" class="screen">
     <button id="btn-ranking-toggle" class="ranking-toggle">🏆 순위</button>
+    <button id="btn-give-up" class="give-up-btn">🚪 나가기</button>
     <div id="stage" class="stage">
       <div id="water-line" class="water-line"></div>
       <div id="players-layer" class="players-layer"></div>
@@ -86,6 +103,7 @@
       </div>
       <div id="timer-bar-wrap"><div id="timer-bar"></div></div>
       <div id="word-display"></div>
+      <p id="chain-hint" class="chain-hint hidden"></p>
       <input id="answer-input" autocomplete="off" placeholder="여기에 정답을 입력하세요" />
       <p id="answer-feedback"></p>
     </div>
