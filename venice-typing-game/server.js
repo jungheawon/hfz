@@ -495,7 +495,7 @@ const rooms = {
   typing: createRoom('typing', 'typing', '⌨️ 타자연습'),
   common: createRoom('common', 'quiz', '📚 상식 퀴즈', COMMON_QUIZ_QUESTIONS),
   haewon: createRoom('haewon', 'quiz', '🏫 해원고 퀴즈', HAEWON_QUIZ_QUESTIONS),
-  quiz: createRoom('quiz', 'quiz', '🧠 정보 퀴즈', JUNGBO_QUIZ_QUESTIONS, 5),
+  quiz: createRoom('jungbo', 'quiz', '🧠 정보 퀴즈', JUNGBO_QUIZ_QUESTIONS, 5),
   ai: createRoom('ai', 'quiz', '🤖 인공지능 퀴즈', AI_QUIZ_QUESTIONS, 5),
   datascience: createRoom('datascience', 'quiz', '📊 데이터과학 퀴즈', DATASCIENCE_QUIZ_QUESTIONS, 5),
   wordchain: createRoom('wordchain', 'wordchain', '🔤 끝말잇기'),
