@@ -71,7 +71,7 @@ const JUNGBO_QUIZ_QUESTIONS = [
   { category: "디지털윤리", question: "스마트폰 문자메시지를 이용한 피싱(phishing) 범죄는? ㅅㅁㅅ", answer: "스미싱" },
   { category: "디지털윤리", question: "사용자의 동의 없이 대량으로 전송되는 불필요한 이메일은? ㅅㅍㅁㅇ", answer: "스팸메일" },
   { category: "디지털윤리", question: "이름, 전화번호처럼 특정 개인을 알아볼 수 있는 정보를 무엇이라 하는가? ㄱㅇㅈㅂ", answer: "개인정보" },
-  { category: "디지털윤리", question: "정보를 다룰 때 지켜야 할 올바른 가치관과 태도를 통틀어 무엇이라 하는가? ㅈㅂㅇㄹ", answer: "정보윤리" },
+  { category: "디지털윤리", question: "정보를 다룰 때 지켜야 할 올바른 가치관과 태도를 통틀어 무엇이라 하는가? ㅈㅂㅇㄹ", answer: "정보윤리" }
 ];
 
 module.exports = { JUNGBO_QUIZ_QUESTIONS };
