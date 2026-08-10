@@ -14,12 +14,15 @@
 
 const QUIZ_QUESTIONS = [
   // ---- 컴퓨팅시스템 ----
-  { category: "컴퓨팅시스템", question: "컴퓨터의 두뇌 역할을 하는 핵심 장치는?", answer: "CPU" },
-  { category: "컴퓨팅시스템", question: "전원이 꺼지면 저장된 내용이 사라지는 휘발성 메모리는?", answer: "RAM" },
+  { category: "컴퓨팅시스템", question: "컴퓨터의 두뇌 역할을 하는 핵심 장치는?(영어)", answer: "cpu" },
+  { category: "컴퓨팅시스템", question: "전원이 꺼지면 저장된 내용이 사라지는 휘발성 메모리는?(영어)", answer: "ram" },
   { category: "컴퓨팅시스템", question: "프로그램 실행 결과를 사람이 볼 수 있게 나타내는 장치는?", answer: "출력장치" },
   { category: "컴퓨팅시스템", question: "컴퓨터 내부에서 0과 1로만 표현하는 수 체계는?", answer: "이진수" },
   { category: "컴퓨팅시스템", question: "하드웨어를 관리하고 사용자와 컴퓨터를 연결해주는 대표적인 소프트웨어(MS)는?", answer: "윈도우" },
   { category: "컴퓨팅시스템", question: "외부 네트워크와 내부 네트워크를 연결해주는 장치는?", answer: "라우터" },
+  { category: "컴퓨팅시스템", question: "네트워크의 출입 데이터를 검사하여 허용되지 않은 접근을 차단하는 장치는?", answer: "방화벽" },
+  { category: "컴퓨팅시스템", question: "여러 컴퓨터를 연결하고 목적지에 해당하는 장치로 데이터를 전달하는 장치는?", answer: "허브스위치" },
+
 
   // ---- 데이터 ----
   { category: "데이터", question: "여러 데이터를 표와 표 사이의 관계로 저장·관리하는 데이터의 구조는?", answer: "정형데이터" },
@@ -33,8 +36,8 @@ const QUIZ_QUESTIONS = [
 
   // ---- 네트워크 ----
   { category: "네트워크", question: "전 세계의 컴퓨터를 서로 연결하는 거대한 통신망은?", answer: "인터넷" },
-  { category: "네트워크", question: "웹사이트 주소 앞에 붙는 보안 통신 프로토콜의 약자는?", answer: "https" },
-  { category: "네트워크", question: "네트워크에서 각 장치를 구분하는 고유 주소를 부르는 두 글자 영문 약자는?", answer: "ip" },
+  { category: "네트워크", question: "10cm 이내의 가까운 거리에서 기기 간 무선 통신을 가능하게 하는 기술은?", answer: "nfc" },
+  { category: "네트워크", question: "전파를 이용하여 태그에 저장된 정보를 비접촉식으로 인식하는 기술은?", answer: "rfid" },
   { category: "네트워크", question: "무선으로 인터넷에 접속할 수 있게 해주는 근거리 통신 기술은?", answer: "와이파이" },
   { category: "네트워크", question: "와이파이 신호를 제공하여 무선 기기가 네트워크에 연결될 수 있도록 하는 장치는?", answer: "엑세스포인트" },
   { category: "네트워크", question: "빛을 이용하여 데이터를 빠르게 전송하는 통신 케이블은?", answer: "광케이블" },
