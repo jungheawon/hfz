@@ -62,7 +62,7 @@ const QUIZ_QUESTIONS = [
   { category: "파이썬 제어구조", question: "파이썬에서 이번 반복을 건너뛰고 다음 반복으로 넘어갈 때 쓰는 키워드는?(영문)", answer: "continue" },
   { category: "파이썬 제어구조", question: "10, -3, 100과 같은 정수를 저장하는 자료형은?(영문)", answer: "int" },
   { category: "파이썬 제어구조", question: "3.14, 0.5와 같은 실수를 저장하는 자료형은?(영문)", answer: "float" },
-  { category: "파이썬 제어구조", question: "True와 False 값을 저장하는 자료형은?"(영문), answer: "bool" },
+  { category: "파이썬 제어구조", question: "True와 False 값을 저장하는 자료형은?(영문)", answer: "bool" },
   { category: "파이썬 제어구조", question: "HelloWorld와 같은 문자열을 저장하는 자료형은?(영문)", answer: "str" },
 
   // ---- 디지털윤리 ----
