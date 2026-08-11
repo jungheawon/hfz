@@ -175,7 +175,12 @@ socket.on('playerListUpdate', ({ players: list, hostId }) => {
   updateLangSelectUI();
 });
 
-socket.on('youAreHost', () => { isHost = true; updateHostControls(); updateLangSelectUI(); });
+socket.on('youAreHost', () => {
+  isHost = true;
+  updateHostControls();
+  updateLangSelectUI();
+  refreshResultButtons(); // 결과 화면에 있는 상태에서 호스트가 바뀌어도 버튼이 바로 보이도록
+});
 
 function cachePlayers(list) {
   players = {};
@@ -438,17 +443,27 @@ const btnRestart = document.getElementById('btn-restart');
 const restartHint = document.getElementById('restart-hint');
 const resultRankingList = document.getElementById('result-ranking-list');
 
+function refreshResultButtons() {
+  if (isHost) { btnRestart.classList.remove('hidden'); btnRestart.disabled = false; restartHint.classList.add('hidden'); }
+  else { btnRestart.classList.add('hidden'); restartHint.classList.remove('hidden'); }
+}
+
 socket.on('gameOver', ({ winner, ranking }) => {
   clearInterval(localTimerInterval);
   actualRoomState = 'ended';
-  if (hasGivenUp) return; // 이미 나가기를 눌러 대기실에서 기다리는 중이면 결과 화면으로 끌고 오지 않음
+  if (hasGivenUp) {
+    // 나가기를 눌렀던 사람은 결과 화면으로 끌고 오지 않지만,
+    // 게임이 실제로 끝났으니 "기다리는 중" 문구 대신 재시작 버튼/안내가 바로 보이도록 갱신합니다.
+    hasGivenUp = false;
+    updateHostControls();
+    return;
+  }
   if (winner) { winnerAnimal.textContent = winner.animal.emoji; winnerName.textContent = winner.nickname; }
   else { winnerAnimal.textContent = '🤝'; winnerName.textContent = '무승부 (생존자 없음)'; }
 
   renderRankingInto(resultRankingList, ranking);
 
-  if (isHost) { btnRestart.classList.remove('hidden'); btnRestart.disabled = false; restartHint.classList.add('hidden'); }
-  else { btnRestart.classList.add('hidden'); restartHint.classList.remove('hidden'); }
+  refreshResultButtons();
   showScreen('result');
 });
 btnRestart.addEventListener('click', () => socket.emit('restartGame'));

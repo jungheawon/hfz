@@ -82,6 +82,7 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     currentDeadline: 0,
     resultEndTime: 0,
     mainLoopId: null,
+    autoResetTimeoutId: null, // 결과 화면에서 너무 오래(5분) 멈춰있으면 자동 복귀시키는 안전장치용
     isPaused: false,
     pauseOffset: 0,
     pauseStartTime: null,
@@ -134,6 +135,8 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     if (state.gameState !== 'waiting' && Object.keys(state.players).length === 0) {
       clearInterval(state.mainLoopId);
       state.mainLoopId = null;
+      clearTimeout(state.autoResetTimeoutId);
+      state.autoResetTimeoutId = null;
       state.gameState = 'waiting';
       state.isPaused = false; state.pauseOffset = 0; state.pauseStartTime = null;
       state.eliminationCounter = 0;
@@ -331,9 +334,18 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
       winner: winner ? { id: winner.id, nickname: winner.nickname, animal: winner.animal } : null,
       ranking: computeRanking(),
     });
+
+    // 안전장치: 결과 화면에서 5분 동안 아무도 재시작을 안 누르면 자동으로 대기실로 복귀시킵니다.
+    // (호스트가 자리를 비웠거나, 예상치 못한 이유로 재시작이 막힌 경우에도 방이 영구히 안 막히도록)
+    clearTimeout(state.autoResetTimeoutId);
+    state.autoResetTimeoutId = setTimeout(() => {
+      if (state.gameState === 'ended') resetToWaiting();
+    }, 5 * 60 * 1000);
   }
 
   function resetToWaiting() {
+    clearTimeout(state.autoResetTimeoutId);
+    state.autoResetTimeoutId = null;
     state.gameState = 'waiting';
     clearInterval(state.mainLoopId);
     state.isPaused = false; state.pauseOffset = 0; state.pauseStartTime = null;
@@ -401,6 +413,8 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     if (Object.keys(state.players).length === 0) {
       clearInterval(state.mainLoopId);
       state.mainLoopId = null;
+      clearTimeout(state.autoResetTimeoutId);
+      state.autoResetTimeoutId = null;
       state.gameState = 'waiting';
       state.isPaused = false; state.pauseOffset = 0; state.pauseStartTime = null;
       state.eliminationCounter = 0;
