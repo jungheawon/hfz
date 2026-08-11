@@ -248,6 +248,12 @@ document.getElementById('btn-back-to-login').addEventListener('click', () => {
   quizTotal = null;
   currentRoomMode = 'typing';
   currentWordLanguage = 'en';
+  hasGivenUp = false;
+  actualRoomState = 'waiting';
+  clientPaused = false;
+  clearInterval(localTimerInterval);
+  document.getElementById('pause-overlay').classList.add('hidden');
+  document.getElementById('ranking-overlay').classList.add('hidden');
   nicknameInput.value = '';
   loginError.textContent = '';
   showScreen('login');

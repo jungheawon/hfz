@@ -395,7 +395,9 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     emitRoom('chatMessage', { nickname: p.nickname, text: clean, id: socket.id });
   }
 
-  function handleDisconnect(socket) {
+  // "연결이 끊김"과 "스스로 나가기 버튼"이 완전히 동일하게 동작하도록 만든 공통 정리 로직.
+  // 게임이 어떤 상태이든(대기중/진행중/결과화면) 상관없이 항상 안전하게 처리합니다.
+  function removePlayerFromRoom(socket) {
     const wasHost = socket.id === state.hostId;
     const existed = state.players[socket.id];
     if (existed) { state.usedAnimalIds.delete(existed.animal.id); delete state.players[socket.id]; }
@@ -408,8 +410,6 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     }
 
     // 방에 아무도 안 남으면, 게임이 어떤 상태였든 상관없이 완전히 초기화합니다.
-    // (호스트가 게임 도중 나가버리고 남은 사람도 없으면 방이 "진행중" 상태로 영영 막혀서
-    //  아무도 새로 못 들어오는 문제를 방지)
     if (Object.keys(state.players).length === 0) {
       clearInterval(state.mainLoopId);
       state.mainLoopId = null;
@@ -437,21 +437,15 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
     }
   }
 
-  // 대기실에서 "뒤로가기"로 스스로 나가는 경우 (게임 중엔 사용하지 않음, 대기실 전용)
-  function leaveRoom(socket) {
-    if (state.gameState !== 'waiting') return;
-    const wasHost = socket.id === state.hostId;
-    const existed = state.players[socket.id];
-    if (existed) { state.usedAnimalIds.delete(existed.animal.id); delete state.players[socket.id]; }
+  function handleDisconnect(socket) {
+    removePlayerFromRoom(socket);
+  }
 
-    if (wasHost) {
-      const remaining = Object.keys(state.players);
-      state.hostId = remaining.length ? remaining[0] : null;
-      if (state.hostId) io.to(state.hostId).emit('youAreHost');
-    }
+  // 대기실/게임/결과 화면 어디서든 "← 처음으로"로 스스로 완전히 나가는 경우
+  function leaveRoom(socket) {
+    removePlayerFromRoom(socket);
     socket.leave(roomId);
     socket.data.roomId = null;
-    emitRoom('playerListUpdate', { players: publicPlayerList(), hostId: state.hostId });
   }
 
   // 게임 중간에 "나가기" 버튼 - 방에서 완전히 나가지는 않고, 그 라운드만 기권(탈락) 처리하고
