@@ -104,6 +104,8 @@ html, body {
 .winner-animal { font-size: 90px; margin-bottom: 6px; }
 #winner-name { font-size: 56px; margin: 0 0 24px; color: #ffd27a; }
 #btn-restart:disabled { opacity: 0.4; cursor: not-allowed; }
+.back-to-waiting-btn { display: block; margin: 14px auto 0; padding: 10px 22px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1); color: #f4f7fb; font-size: 14px; cursor: pointer; }
+.back-to-waiting-btn:hover { background: rgba(255,255,255,0.2); }
 .result-ranking-wrap { margin: 6px 0 20px; }
 .result-ranking-wrap h3 { font-size: 15px; opacity: 0.8; margin-bottom: 8px; }
 

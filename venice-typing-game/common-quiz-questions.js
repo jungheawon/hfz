@@ -1,6 +1,6 @@
 // =========================================================
 // "상식 퀴즈" 방에서 사용하는 문제 목록입니다. (일반 상식)
-// 고등학교 정보 교과 문제는 quiz-questions.js 에 따로 있습니다.
+// 고등학교 정보 교과 문제는 jungbo-quiz-questions.js 에 따로 있습니다.
 //
 // 이 파일만 수정하면 문제를 자유롭게 바꿀 수 있습니다.
 // - question : 화면에 보여줄 문제
@@ -30,7 +30,7 @@ const COMMON_QUIZ_QUESTIONS = [
   { question: "물이 어는 온도는 섭씨 몇 도? (숫자만)", answer: "0" },
   { question: "1더하기1은? (숫자만)", answer: "2" },
   { question: "정해원의 뜻은?", answer: "정보해원" },
-   { question: "대한민국의 국기는?", answer: "태극기" },
+  { question: "대한민국의 국기는?", answer: "태극기" },
   { question: "지구가 태양을 한 바퀴 도는 데 걸리는 시간은? (일 단위, 숫자만)", answer: "365" },
   { question: "태양계에서 지구와 가장 가까운 행성은?", answer: "금성" },
   { question: "사람의 몸에서 피를 순환시키는 기관은?", answer: "심장" },
@@ -70,7 +70,6 @@ const COMMON_QUIZ_QUESTIONS = [
   { question: "빛의 속도는 초당 약 몇 km인가? (숫자만)", answer: "300000" },
   { question: "식물이 햇빛을 이용해 양분을 만드는 과정은?", answer: "광합성" },
   { question: "지구에서 가장 큰 동물은?", answer: "대왕고래" },
-
 ];
 
 module.exports = { COMMON_QUIZ_QUESTIONS };

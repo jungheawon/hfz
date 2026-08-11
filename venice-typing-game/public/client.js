@@ -10,6 +10,7 @@ let localDeadline = null;
 let localTimeLimit = 10;
 let clientPaused = false;
 let hasGivenUp = false; // 게임 중 "나가기"를 눌러 대기실로 돌아간 상태인지
+let actualRoomState = 'waiting'; // 서버가 실제로 알려준 마지막 상태 (waiting/playing/ended)
 
 // ---------- 화면 전환 ----------
 const screens = {
@@ -145,6 +146,7 @@ socket.on('joined', ({ self, isHost: hostFlag, players: list, roomLabel, quizTot
   quizTotal = qt || null;
   currentRoomMode = mode || 'typing';
   currentWordLanguage = wordLanguage || 'en';
+  actualRoomState = 'waiting';
   cachePlayers(list);
   renderWaitingRoom();
   updateLangSelectUI();
@@ -204,10 +206,33 @@ function updateHostControls() {
     waitingHint.classList.remove('hidden');
     return;
   }
+  if (actualRoomState === 'ended') {
+    if (isHost) {
+      btnStart.classList.remove('hidden');
+      btnStart.textContent = '🔄 게임 다시 시작';
+      waitingHint.classList.add('hidden');
+    } else {
+      btnStart.classList.add('hidden');
+      waitingHint.textContent = '호스트가 다시 시작하기를 기다리는 중...';
+      waitingHint.classList.remove('hidden');
+    }
+    return;
+  }
+  if (actualRoomState === 'playing') {
+    btnStart.classList.add('hidden');
+    waitingHint.textContent = '이전 게임이 아직 진행 중입니다...';
+    waitingHint.classList.remove('hidden');
+    return;
+  }
+  btnStart.textContent = '게임 시작';
   if (isHost) { btnStart.classList.remove('hidden'); waitingHint.classList.add('hidden'); }
   else { btnStart.classList.add('hidden'); waitingHint.classList.remove('hidden'); }
 }
-btnStart.addEventListener('click', () => { ensureAudio(); socket.emit('startGame'); });
+btnStart.addEventListener('click', () => {
+  ensureAudio();
+  if (actualRoomState === 'ended') socket.emit('restartGame');
+  else socket.emit('startGame');
+});
 
 document.getElementById('btn-back-to-login').addEventListener('click', () => {
   socket.emit('leaveRoom');
@@ -239,6 +264,7 @@ const STAGE_TOP_PAD = 0, STAGE_BOTTOM_PAD = 22, MAX_ROW = 10;
 
 socket.on('gameStarted', ({ players: list }) => {
   hasGivenUp = false;
+  actualRoomState = 'playing';
   cachePlayers(list);
   playerOrder = list.map(p => p.id);
   buildPlayerTokens();
@@ -414,6 +440,7 @@ const resultRankingList = document.getElementById('result-ranking-list');
 
 socket.on('gameOver', ({ winner, ranking }) => {
   clearInterval(localTimerInterval);
+  actualRoomState = 'ended';
   if (hasGivenUp) return; // 이미 나가기를 눌러 대기실에서 기다리는 중이면 결과 화면으로 끌고 오지 않음
   if (winner) { winnerAnimal.textContent = winner.animal.emoji; winnerName.textContent = winner.nickname; }
   else { winnerAnimal.textContent = '🤝'; winnerName.textContent = '무승부 (생존자 없음)'; }
@@ -428,6 +455,7 @@ btnRestart.addEventListener('click', () => socket.emit('restartGame'));
 
 socket.on('gameReset', ({ players: list, hostId }) => {
   hasGivenUp = false;
+  actualRoomState = 'waiting';
   isHost = myId === hostId;
   cachePlayers(list);
   renderWaitingRoom();
@@ -441,6 +469,18 @@ document.getElementById('btn-give-up').addEventListener('click', () => {
   if (!confirm('정말 게임에서 나가시겠어요? 대기실로 돌아갑니다.')) return;
   socket.emit('giveUp');
   hasGivenUp = true;
+  clearInterval(localTimerInterval);
+  document.getElementById('pause-overlay').classList.add('hidden');
+  document.getElementById('ranking-overlay').classList.add('hidden');
+  clientPaused = false;
+  renderWaitingRoom();
+  showScreen('waiting');
+});
+
+// ---------- 결과(순위) 화면에서도 대기실로 나가기 ----------
+// 게임이 이미 끝난 상태라 별도로 기권 처리할 게 없어서, 화면만 대기실로 전환합니다.
+// (호스트가 재시작하면 그때 모두 함께 진짜 대기실 상태로 다시 동기화됩니다)
+document.getElementById('btn-result-to-waiting').addEventListener('click', () => {
   clearInterval(localTimerInterval);
   document.getElementById('pause-overlay').classList.add('hidden');
   document.getElementById('ranking-overlay').classList.add('hidden');
