@@ -10,7 +10,6 @@
 const NARAK_QUIZ_QUESTIONS = [
   { question: "독도는 어느 나라의 영토인가?", answer: "대한민국" },
   { question: "한글을 창제한 조선의 왕은?", answer: "세종대왕" },
-  { question: "훈민정음이 반포된 연도는? (숫자만)", answer: "1446" },
   { question: "3·1 운동이 일어난 연도는? (숫자만)", answer: "1919" },
   { question: "일제강점기가 시작된 연도는? (숫자만)", answer: "1910" },
   { question: "8·15 광복이 이루어진 연도는? (숫자만)", answer: "1945" },
@@ -52,31 +51,9 @@ const NARAK_QUIZ_QUESTIONS = [
   { question: "대한민국의 국기는?", answer: "태극기" },
   { question: "대한민국의 국화는?", answer: "무궁화" },
   { question: "대한민국의 화폐 단위는?", answer: "원" },
-  { question: "1년은 몇 개월인가?", answer: ["12개월","12"] },
-  { question: "1주일은 며칠인가?", answer: ["7일","7"] },
-  { question: "하루는 몇 시간인가?", answer: ["24시간","24"] },
-  { question: "1시간은 몇 분인가?", answer: ["60분","60"] },
-  { question: "1분은 몇 초인가?", answer: ["60초","60"] },
-  { question: "물의 화학식은?", answer: ["h2o","H2O"] },
-  { question: "태양계의 중심에 있는 것은?", answer: "태양" },
-  { question: "지구의 위성은?", answer: "달" },
-  { question: "사람의 손가락은 한 손에 몇 개인가?", answer: "5개" },
-  { question: "사람의 눈은 몇 개인가?", answer: ["2","2개"] },
-  { question: "삼각형의 변은 몇 개인가?", answer: ["3","3개"] },
-  { question: "사각형의 변은 몇 개인가?", answer: ["4","4개"] },
-  { question: "대한민국의 가장 큰 섬은?", answer: "제주도" },
+ 
   { question: "우리나라에서 가장 높은 산은?", answer: "한라산" },
-  { question: "세계에서 가장 높은 산은?", answer: "에베레스트" },
-  { question: "지구에서 가장 큰 대륙은?", answer: "아시아" },
-  { question: "지구에서 가장 큰 바다는?", answer: "태평양" },
-  { question: "겨울 다음에 오는 계절은?", answer: "봄" },
-  { question: "여름 다음에 오는 계절은?", answer: "가을" },
-  { question: "빨간색 신호등에서 어떻게 해야 하는가?", answer: "정지" },
-  { question: "비가 올 때 사용하는 물건은?", answer: "우산" },
-  { question: "이를 닦을 때 사용하는 것은?", answer: "칫솔" },
-  { question: "밥을 먹을 때 사용하는 대표적인 도구는?", answer: "숟가락" },
-  { question: "대한민국의 공식 언어는?", answer: "한국어" },
-  { question: "축구 경기에서 한 팀이 경기장에 출전시키는 선수는 몇 명인가?", answer: ["11","11명"] },
+ 
 ];
 
 module.exports = { NARAK_QUIZ_QUESTIONS };
