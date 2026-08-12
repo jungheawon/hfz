@@ -53,7 +53,10 @@ const NARAK_QUIZ_QUESTIONS = [
   { question: "대한민국의 화폐 단위는?", answer: "원" },
  
   { question: "우리나라에서 가장 높은 산은?", answer: "한라산" },
- 
+  { question: "대한민국의 가장 큰 섬은?", answer: "제주도" },
+  { question: "대한민국의 초대 대통령은?", answer: "이승만" },
+  { question: "조선 시대의 수도는?", answer: "한양" },
+  { question: "대한민국의 수도 서울을 흐르는 대표적인 강은?", answer: "한강" },
 ];
 
 module.exports = { NARAK_QUIZ_QUESTIONS };
