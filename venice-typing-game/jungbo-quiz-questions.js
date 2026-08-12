@@ -14,8 +14,8 @@
 
 const JUNGBO_QUIZ_QUESTIONS = [
 // ---- 컴퓨팅시스템 ----
-  { question: "컴퓨터의 두뇌 역할을 하는 핵심 장치는? c O O", answer: "cpu" },
-  { question: "전원이 꺼지면 저장된 내용이 사라지는 휘발성 메모리는? r O O", answer: "ram" },
+  { question: "컴퓨터의 두뇌 역할을 하는 핵심 장치는? ㅆㅍㅇ", answer: "씨피유" },
+  { question: "전원이 꺼지면 저장된 내용이 사라지는 휘발성 메모리는? ㄹ", answer: "램" },
   { question: "프로그램 실행 결과를 사람이 볼 수 있게 나타내는 장치는? ㅊㄹㅈㅊ", answer: "출력장치" },
   { question: "컴퓨터 내부에서 0과 1로만 표현하는 수 체계는? ㅇㅈㅅ", answer: "이진수" },
   { question: "하드웨어를 관리하고 사용자와 컴퓨터를 연결해주는 대표적인 소프트웨어(MS)는? ㅇㄷㅇ", answer: "윈도우" },
