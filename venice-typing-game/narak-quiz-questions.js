@@ -62,7 +62,7 @@ const NARAK_QUIZ_QUESTIONS = [
   { question: "조선시대 대표적인 여성 예술가이자 율곡 이이의 어머니는 누구인가? ㅅㅅㅇㄷ", answer: "신사임당" },
   { question: "고구려를 건국한 사람은 누구인가? ㅈㅁ", answer: "주몽" },
   { question: "신라를 통일하는 데 큰 역할을 한 장군은 누구인가? ㄱㅇㅅ", answer: "김유신" },
-  { question: "신라를 건국한 사람은 누구인가? ㅂㅎㄱㅅ", answer: "박혁거세" }.
+  { question: "신라를 건국한 사람은 누구인가? ㅂㅎㄱㅅ", answer: "박혁거세" },
   
 ];
 
