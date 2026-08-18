@@ -33,8 +33,8 @@ const JUNGBO_QUIZ_QUESTIONS = [
 
   // ---- 네트워크 ----
   { question: "전 세계의 컴퓨터를 서로 연결하는 거대한 통신망은? ㅇㅌㄴ", answer: "인터넷" },
-  { question: "웹사이트 주소 앞에 붙는 보안 통신 프로토콜의 약자는? h O O O s", answer: "https" },
-  { question: "네트워크에서 각 장치를 구분하는 고유 주소를 부르는 두 글자 영문 약자는? i O", answer: "ip" },
+  { question: "웹사이트 주소 앞에 붙는 보안 통신 프로토콜의 약자는? h(    )s", answer: "https" },
+  { question: "네트워크에서 각 장치를 구분하는 고유 주소를 부르는 두 글자 영문 약자는? ㅇㅇㅍ", answer: "아이피" },
   { question: "무선으로 인터넷에 접속할 수 있게 해주는 근거리 통신 기술은? ㅇㅇㅍㅇ", answer: "와이파이" },
   { question: "와이파이 신호를 제공하여 무선 기기가 네트워크에 연결될 수 있도록 하는 장치는? ㅇㅅㅅㅍㅇㅌ", answer: "액세스포인트" },
   { question: "빛을 이용하여 데이터를 빠르게 전송하는 통신 케이블은? ㄱㅋㅇㅂ", answer: "광케이블" },
@@ -51,16 +51,16 @@ const JUNGBO_QUIZ_QUESTIONS = [
   { question: "자료를 처음부터 끝까지 차례대로 확인하며 찾는 탐색 방법은? ㅅㅊㅌㅅ", answer: "순차탐색" },
 
   // ---- 파이썬 제어구조 ----
-  { question: "파이썬에서 입력은 input, 출력은? p O O O O", answer: "print" },
-  { question: "파이썬에서 조건을 판단할 때 사용하는 예약어는? i O", answer: "if" },
-  { question: "파이썬에서 정해진 횟수/범위를 반복할 때 자주 쓰는 반복문은? f O O", answer: "for" },
-  { question: "조건이 참인 동안 계속 반복 실행하는 파이썬 반복문은? w O O O O", answer: "while" },
-  { question: "파이썬에서 반복문을 즉시 빠져나올 때 쓰는 키워드는? b O O O O", answer: "break" },
-  { question: "파이썬에서 이번 반복을 건너뛰고 다음 반복으로 넘어갈 때 쓰는 키워드는? c O O t O O O e", answer: "continue" },
-  { question: "10, -3, 100과 같은 정수를 저장하는 자료형은? i O O", answer: "int" },
-  { question: "3.14, 0.5와 같은 실수를 저장하는 자료형은? f O O O O", answer: "float" },
-  { question: "True와 False 값을 저장하는 자료형은? b O O O", answer: "bool" },
-  { question: "HelloWorld와 같은 문자열을 저장하는 자료형은? s O O", answer: "str" },
+  { question: "파이썬에서 입력은 input, 출력은? ㅍㄹㅌ", answer: "프린트" },
+  { question: "파이썬에서 조건을 판단할 때 사용하는 예약어는? ㅇㅍ", answer: "이프" },
+  { question: "파이썬에서 정해진 횟수/범위를 반복할 때 자주 쓰는 반복문은? ㅍ ", answer: "포" },
+  { question: "조건이 참인 동안 계속 반복 실행하는 파이썬 반복문은? ㅇㅇ", answer: "와일" },
+  { question: "파이썬에서 반복문을 즉시 빠져나올 때 쓰는 키워드는? ㅂㄹㅇㅋ", answer: "브레이크" },
+  { question: "파이썬에서 이번 반복을 건너뛰고 다음 반복으로 넘어갈 때 쓰는 키워드는? ㅋㅌㄴ", answer: "컨티뉴" },
+  { question: "10, -3, 100과 같은 정수를 저장하는 자료형은? ㅇㅌ", answer: "인트" },
+  { question: "3.14, 0.5와 같은 실수를 저장하는 자료형은? ㅍㄹㅌ", answer: "플로트" },
+  { question: "True와 False 값을 저장하는 자료형은? ㅂㅇ", answer: "부울" },
+  { question: "HelloWorld와 같은 문자열을 저장하는 자료형은? ㅅㅌㄹ", answer: "스트롱" },
 
   // ---- 디지털윤리 ----
   { question: "다른 사람의 저작물을 허락 없이 자신의 것처럼 사용하는 행위는? ㅍㅈ", answer: "표절" },
