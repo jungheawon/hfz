@@ -329,6 +329,11 @@ function createRoom(roomId, mode, label, questionBank, fixedRoundTime) {
         : undefined;
       applyAnswer(p, false, extra);
     });
+
+    if (state.mode === 'wordchain' && !state.roundWinner) {
+      state.chainWord = WORDCHAIN_SEED_WORDS[Math.floor(Math.random() * WORDCHAIN_SEED_WORDS.length)];
+      state.usedWords.add(state.chainWord);
+    }
     state.resultEndTime = vNow() + NEXT_ROUND_DELAY;
   }
 
