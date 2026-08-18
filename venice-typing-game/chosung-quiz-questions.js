@@ -118,7 +118,6 @@ const CHOSUNG_QUIZ_QUESTIONS = [
   { question: "초성퀴즈: ㅇㅋㄹㄷㅂ", answer: "인크레더블" },
   { question: "초성퀴즈: ㅋㄹㄹㅇ", answer: "코랄라인" },
   { question: "초성퀴즈: ㅅㄹ", answer: "슈렉" },
-]
 ];
 
 module.exports = { CHOSUNG_QUIZ_QUESTIONS };
