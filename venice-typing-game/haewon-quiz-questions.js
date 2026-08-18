@@ -19,7 +19,7 @@ const HAEWON_QUIZ_QUESTIONS = [
   { question: "1학년 7반 담임인 영어쌤 이름은?ㅇㅅㅅ", answer: "안성실" },
   { question: "1학년 8반 담임인 지리쌤 이름은?ㄱㅇㅅ", answer: "김이식" },
   { question: "1학년 9반 담임인 국어쌤 이름은?ㄱㄱㅎ", answer: "김관희" },
-  { question: "1학년 10반 담임인 국어쌤 이름은?ㅇㅅㄹ", answer: "오상록" },
+  { question: "1학년 10반 담임인 체육쌤 이름은?ㅇㅅㄹ", answer: "오상록" },
   { question: "1학년 부장인 수학쌤 이름은?ㄱㄹㅎ", answer: "권량희" },
 
   // ---- 2학년 ----
@@ -40,6 +40,7 @@ const HAEWON_QUIZ_QUESTIONS = [
   { question: "교감선생님 성함은?ㄱㅎㅅ", answer: "김효식" },
   { question: "해원고등학교 개교 연도는? 2010년 이후", answer: "2013" },
   { question: "해원고등학교 교목은?ㅁㅅㄴㅁ", answer: "미선나무" },
+  { question: "해원고등학교 급식 시간은? 12시 (   )분", answer: "40" },
 ];
 
 module.exports = { HAEWON_QUIZ_QUESTIONS };
