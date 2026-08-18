@@ -118,6 +118,16 @@ const CHOSUNG_QUIZ_QUESTIONS = [
   { question: "초성퀴즈: ㅇㅋㄹㄷㅂ", answer: "인크레더블" },
   { question: "초성퀴즈: ㅋㄹㄹㅇ", answer: "코랄라인" },
   { question: "초성퀴즈: ㅅㄹ", answer: "슈렉" },
+
+  { question: "ㅈㄱㅇㄱㅇ", answer: "진격의거인" },
+  { question: "ㅇㄹㅇㄱ", answer: "에렌예거" },
+  { question: "ㅁㅋㅅㅇㅋㅁ", answer: "미카사아커만" },
+  { question: "ㄹㅇㅂㅇㅋㅁ", answer: "리바이아커만" },
+  { question: "ㅇㅁㄴㅇㄹㅌ", answer: "아르민알레르트" },
+  { question: "ㅎㅈ", answer: "한지" },
+  { question: "ㅈㅅㅂㄷ", answer: "조사병단" },
+  { question: "ㅊㄷㄱㅇ", answer: "초대거인" },
+  
 ];
 
 module.exports = { CHOSUNG_QUIZ_QUESTIONS };
