@@ -10,7 +10,6 @@
 const NARAK_QUIZ_QUESTIONS = [
   { question: "독도는 어느 나라의 영토인가?", answer: "대한민국" },
   { question: "한글을 창제한 조선의 왕은?", answer: "세종대왕" },
-  { question: "3·1 운동이 일어난 연도는? (숫자만)", answer: "1919" },
   { question: "일제강점기가 시작된 연도는? (숫자만)", answer: "1910" },
   { question: "8·15 광복이 이루어진 연도는? (숫자만)", answer: "1945" },
   { question: "6·25 전쟁이 발발한 연도는? (숫자만)", answer: "1950" },
@@ -27,7 +26,7 @@ const NARAK_QUIZ_QUESTIONS = [
   { question: "대한민국의 광복절은 몇 월 며칠? (예: 815)", answer: "815" },
   { question: "설날은 음력 몇 월 며칠? (예: 1월1일→11)", answer: "11" },
   { question: "추석은 음력 몇 월 며칠? (예: 8월15일→815)", answer: "815" },
-  { question: "1988년 서울에서 개최된 국제 스포츠 대회는?", answer: "서울올림픽" },
+  { question: "1988년 서울에서 개최된 국제 스포츠 대회는? 서울OOO", answer: "올림픽" },
   { question: "2002년 한일 월드컵에서 대한민국이 기록한 최종 순위는? (숫자만)", answer: "4" },
   { question: "대한민국 임시정부 초대 대통령은?", answer: "이승만" },
   { question: "우리나라 최초의 한글 소설 '홍길동전'을 지은 인물은?", answer: "허균" },
