@@ -56,6 +56,14 @@ const NARAK_QUIZ_QUESTIONS = [
   { question: "대한민국의 초대 대통령은?", answer: "이승만" },
   { question: "조선 시대의 수도는?", answer: "한양" },
   { question: "대한민국의 수도 서울을 흐르는 대표적인 강은?", answer: "한강" },
+  { question: "대한민국 광복을 위해 힘쓴 대표적인 독립운동가이자 대한민국 임시정부 주석은 누구인가? ㄱㄱ", answer: "김구" },
+  { question: "1909년 하얼빈에서 이토 히로부미를 저격한 독립운동가는 누구인가? ㅇㅈㄱ", answer: "안중근" },
+  { question: "상하이 홍커우 공원에서 의거를 일으킨 독립운동가는 누구인가? ㅇㅂㄱ", answer: "윤봉길" },
+  { question: "조선시대 대표적인 여성 예술가이자 율곡 이이의 어머니는 누구인가? ㅅㅅㅇㄷ", answer: "신사임당" },
+  { question: "고구려를 건국한 사람은 누구인가? ㅈㅁ", answer: "주몽" },
+  { question: "신라를 통일하는 데 큰 역할을 한 장군은 누구인가? ㄱㅇㅅ", answer: "김유신" },
+  { question: "신라를 건국한 사람은 누구인가? ㅂㅎㄱㅅ", answer: "박혁거세" }.
+  
 ];
 
 module.exports = { NARAK_QUIZ_QUESTIONS };
