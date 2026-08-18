@@ -37,7 +37,7 @@ const NARAK_QUIZ_QUESTIONS = [
   { question: "대한민국 대통령의 임기는 몇 년인가? (숫자만)", answer: "5" },
   { question: "대한민국 국회의원의 임기는 몇 년인가? (숫자만)", answer: "4" },
   { question: "대한민국 헌법상 주권은 누구에게 있는가?", answer: "국민" },
-  { question: "태권도가 유래한 나라는?", answer: "대한민국" },
+  { question: "태권도가 처음 시작된 나라는 어디인가?", answer: "대한민국" },
   { question: "대한민국의 전통 가옥을 무엇이라 하는가?", answer: "한옥" },
   { question: "온돌은 전통적으로 무엇을 데우는 난방 방식인가?", answer: "바닥" },
   { question: "김장은 무엇을 담그는 것을 말하는가?", answer: "김치" },
