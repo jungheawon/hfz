@@ -5,7 +5,12 @@
 
 const DATASCIENCE_QUIZ_QUESTIONS = [
   { question: "데이터를 수집·정리·분석하여 통찰을 얻는 학문 분야는? 데OOOO", answer: "데이터과학" },
+
+  { question: "개인의 이름, 주소, 전화번호 등 개인을 식별할 수 있는 정보는? OOO정보", answer: "개인정보" },
+  { question: "데이터를 분석할 때 특정 집단에 불리한 결과가 반복적으로 나타나는 문제를 데이터 OOO라고 한다.", answer: "편향성" },
+  
   { question: "결측치·이상치 등을 처리해 데이터를 분석하기 좋은 상태로 만드는 작업은? 전OO", answer: "전처리" },
+  
   { question: "데이터를 모두 더해서 개수로 나눈 대표값은? 평OO", answer: "평균값" },
   { question: "데이터를 크기순으로 나열했을 때 가운데 위치한 값은? 중OO", answer: "중앙값" },
   { question: "데이터에서 가장 자주 나타나는 값은? 최OO", answer: "최빈값" },
@@ -13,13 +18,10 @@ const DATASCIENCE_QUIZ_QUESTIONS = [
 
   { question: "값이 비어 있는 데이터를 무엇이라 하는가? 결OO", answer: "결측치" },
   { question: "다른 데이터와 동떨어진 극단적인 값은? 이OO", answer: "이상치" },
+  { question: "데이터에서 동일한 값이나 동일한 기록이 여러 번 나타나는 것을? 중OO", answer: "중복치" },
   
   //{ question: "두 변수 사이의 관계 강도와 방향을 나타내는 통계값은? ㅅㄱㄱㅅ", answer: "상관계수" },
-  
-  //{ question: "모델을 학습시키기 위해 사용하는 데이터는? ㅎㄹㄷㅇㅌ", answer: "훈련데이터" },
-  //{ question: "모델의 성능을 평가하기 위해 따로 남겨둔 데이터는? ㅌㅅㅌㄷㅇㅌ", answer: "테스트데이터" },
-  //{ question: "분류 모델에서 예측이 실제와 맞은 비율을 나타내는 지표는? ㅈㅎㄷ", answer: "정확도" },
-  //{ question: "데이터를 미리 정해진 몇 개의 범주로 나누는 예측 문제는? ㅂㄹ", answer: "분류" },
+
   
   { question: "연속적인 숫자 값을 예측하는 문제는? 회O", answer: "회귀" },
   { question: "비슷한 데이터끼리 그룹으로 묶는 비지도학습 기법은? 군O", answer: "군집" },
@@ -31,7 +33,7 @@ const DATASCIENCE_QUIZ_QUESTIONS = [
   
   //{ question: "데이터의 전체 항목 중 분석에 사용할 특징이나 변수를 무엇이라 하는가? ㅌㅅ", answer: "특성" },
   { question: "서로 다른 범위의 데이터를 0~1의 일정한 범위로 조정하는 방법은? 정OO", answer: "정규화" },
-  { question: "평균과 표준편차를 이용하여 데이터의 값을 변환하는 방법은? 표OO", answer: "표준화" },
+  //{ question: "평균과 표준편차를 이용하여 데이터의 값을 변환하는 방법은? 표OO", answer: "표준화" },
   
   //{ question: "데이터의 전체적인 특징과 패턴을 파악하기 위해 데이터를 탐색하는 분석 방법은? ㅌㅅㅈㅂㅅ", answer: "탐색적분석" },
   { question: "데이터의 특징이나 관계를 그래프와 그림으로 표현하는 과정은? 시OO", answer: "시각화" },
@@ -58,6 +60,20 @@ const DATASCIENCE_QUIZ_QUESTIONS = [
   //{ question: "데이터를 학습용과 평가용 등으로 나누는 과정을 무엇이라 하는가? ㄷㅇㅌㅂㅎ", answer: "데이터분할" },
   //{ question: "모델이 학습한 데이터가 아닌 새로운 데이터에서도 좋은 성능을 내는 능력은? ㅇㄹㅎ", answer: "일반화" },
   { question: "모델이 학습 데이터에 지나치게 맞춰져 새로운 데이터에서 성능이 떨어지는 현상은? 과OO", answer: "과적합" },
+
+  { question: "성별, 혈액형, 지역과 같이 숫자로 계산하기 어려운 데이터를? (  )형 데이터", answer: "범주" },
+  { question: "키, 몸무게, 온도처럼 수치로 표현할 수 있는 데이터를? (  )형 데이터", answer: "수치" },
+
+  //{ question: "두 변수 사이에서 한 변수가 증가할 때 다른 변수도 증가하는 경향이 나타나는 관계는? OOOOO 상관관계", answer: "양의" },
+  //{ question: "한 변수가 증가할 때 다른 변수가 감소하는 경향이 나타나는 관계는? OOOOO 상관관계", answer: "음의" },
+  //{ question: "두 변수 사이에 일정한 관계가 나타나지 않는 경우를? OOOOO", answer: "상관관계 없음" },
+  //{ question: "두 변수 사이의 관계가 얼마나 강하고 어떤 방향으로 나타나는지를 수치로 나타낸 것을? 상관 OOOOO", answer: "계수" },
+  //{ question: "상관관계가 있다고 해서 반드시 한 변수가 다른 변수의 원인이라고 할 수 있는 것은 아니다. 이를 상관관계와 OOOOO의 차이라고 한다.", answer: "인과관계" },
+  //{ question: "한 변수의 변화가 다른 변수의 변화를 직접적으로 일으키는 관계는? OOOOO", answer: "인과관계" },
+
+
+
+
 ];
 
 module.exports = { DATASCIENCE_QUIZ_QUESTIONS };
