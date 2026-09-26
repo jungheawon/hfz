@@ -41,7 +41,7 @@ const DATASCIENCE_QUIZ_QUESTIONS = [
   { question: "연속적인 수치 자료의 분포를 막대로 나타내는 그래프는? 히OOOO", answer: "히스토그램" },
   { question: "여러 항목의 값을 색의 진하기로 표현하는 그래프는?", answer: "히트맵" },
   { question: "두 변수 사이의 관계를 점으로 표현하는 그래프는? 산OO", answer: "산점도" },
-  { question: "전체에서 각 항목이 차지하는 비율을 나타내는 그래프는? O그래프", answer: "원그래프" },
+  { question: "전체에서 각 항목이 차지하는 비율을 나타내는 그래프는? 원OOO", answer: "원그래프" },
   
   { question: "데이터에서 반복적으로 나타나는 규칙이나 특징을 무엇이라 하는가? 패O", answer: "패턴" },
   
